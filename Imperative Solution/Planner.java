@@ -71,9 +71,13 @@ public class Planner {
         return newActivities;
     }
 
-    private static int solution (Activity[] activities, double currentTime) {
-
-        return 0;
+    private static void generateSchedule (Activity[] activities, double currentTime) {
+        for (Activity activity : activities) {
+            while (currentTime < activity.endRange) {
+                System.out.println(currentTime + ": " + activity.name);
+                currentTime += activity.duration;
+            }
+        } 
     }
 
     public static void checkAllowance(Activity[] activities, double currentTime) {
