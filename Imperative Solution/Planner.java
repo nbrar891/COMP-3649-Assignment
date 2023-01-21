@@ -111,4 +111,17 @@ public class Planner {
         timeDouble = hours + (minutes / 60.0);
         return timeDouble;
     }
+
+    // convert hours to mins
+    public static double convertHoursToMins(double hours) {
+        double mins = hours * 60;
+        return mins;
+    }
+
+    // convert mins to hours
+    public static double convertMinsToHours(double mins) {
+        double hours = mins / 60;
+        return hours;
+    }
 }
+
