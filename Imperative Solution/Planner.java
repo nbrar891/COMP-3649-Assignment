@@ -82,7 +82,7 @@ public class Planner {
     }
 
     // convert military time to standard time
-    public static String convertTime(double time) {
+    public static String convertToStandard(double time) {
         String timeString = "";
         int hours = (int) time;
         int minutes = (int) ((time - hours) * 60);
@@ -101,7 +101,7 @@ public class Planner {
     }
 
     // convert standard time to military time
-    public static double convertTime(String time) {
+    public static double convertToMilitary(String time) {
         double timeDouble = 0;
         int hours = Integer.parseInt(time.substring(0, 2));
         int minutes = Integer.parseInt(time.substring(3, 5));
