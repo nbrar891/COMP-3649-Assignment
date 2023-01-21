@@ -8,15 +8,20 @@ public class Activity {
     public double startRange;
     public double endRange;
     public boolean allowed;
+    public double actualStart;
+    public double actualEnd;
 
-    public Activity(String name, double duration, int id,double startRange,double endRange, boolean allowed) {
+    public Activity(String name, double duration, int id,double startRange,double endRange, boolean allowed
+            ,double actualStart, double actualEnd) {
+
         this.name = name;
         this.duration = duration;
         this.id = id;
         this.startRange = startRange;
         this.endRange = endRange;
         this.allowed = allowed;
-
+        this.actualStart = actualStart;
+        this.actualEnd = actualEnd;
 
     }
 
