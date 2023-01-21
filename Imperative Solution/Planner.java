@@ -80,4 +80,35 @@ public class Planner {
             }
         }
     }
+
+    // convert military time to standard time
+    public static String convertTime(double time) {
+        String timeString = "";
+        int hours = (int) time;
+        int minutes = (int) ((time - hours) * 60);
+        if (hours > 12) {
+            hours -= 12;
+            timeString = hours + ":" + minutes + "pm";
+        } else if (hours == 12) {
+            timeString = hours + ":" + minutes + "pm";
+        } else if (hours == 0) {
+            hours = 12;
+            timeString = hours + ":" + minutes + "am";
+        } else {
+            timeString = hours + ":" + minutes + "am";
+        }
+        return timeString;
+    }
+
+    // convert standard time to military time
+    public static double convertTime(String time) {
+        double timeDouble = 0;
+        int hours = Integer.parseInt(time.substring(0, 2));
+        int minutes = Integer.parseInt(time.substring(3, 5));
+        if (time.substring(6, 8).equals("pm")) {
+            hours += 12;
+        }
+        timeDouble = hours + (minutes / 60.0);
+        return timeDouble;
+    }
 }
