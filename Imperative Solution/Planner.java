@@ -1,11 +1,13 @@
-package dailyplanner;
 import java.io.File;  // Import the File class
 import java.io.FileNotFoundException;  // Import this class to handle errors
 import java.util.Scanner; // Import the Scanner class to read text files
+import java.io.*;
 
 public class Planner {
 
     public static void main(String[] args) {
+
+
         try {
             Scanner input = new Scanner (new File("Test.txt"));
             input.useDelimiter("-|\n|hrs|mins|V");
@@ -71,13 +73,9 @@ public class Planner {
         return newActivities;
     }
 
-    private static void generateSchedule (Activity[] activities, double currentTime) {
-        for (Activity activity : activities) {
-            while (currentTime < activity.endRange) {
-                System.out.println(currentTime + ": " + activity.name);
-                currentTime += activity.duration;
-            }
-        } 
+    private static int solution (Activity[] activities, double currentTime) {
+
+        return 0;
     }
 
     public static void checkAllowance(Activity[] activities, double currentTime) {
@@ -118,6 +116,29 @@ public class Planner {
         }
         timeDouble = hours + (minutes / 60.0);
         return timeDouble;
+    }
+
+    public static void printSchedule(Activity[] activities) // this method takes in a array of activities and outputs it to the console.
+    {
+        for(Activity actvity : activities) // iterates each activity in the act
+        {
+            outputFormatter(actvity);
+        }
+    }
+    public static void outputFormatter(Activity activity) // prints out the activity for that time slot 
+    {
+
+        system.out.println("    " + "-------------------------------------------------------");
+        system.out.println("    " + "|");                                                 
+        system.out.println("    " + "|");                                                   
+        system.out.println("    " + "|"+ " Time: " + convertStandard(activity.actualStart) + "  -  "  + convertStandard(activity.actualEnd) );
+        system.out.println("    " + "|");
+        system.out.println("    " + "|" + " Task: " + actvity.name);
+        system.out.println("    " + "|");
+        system.out.println("    " + "|");
+        system.out.println("    " + "--------------------------------------------------------");
+        
+
     }
 
 
