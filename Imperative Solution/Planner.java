@@ -8,9 +8,10 @@ public class Planner {
     public static void main(String[] args) {
         try {
             Scanner input = new Scanner (new File("Test.txt"));
-            input.useDelimiter("-|\n|hrs|min|V");
+            input.useDelimiter("-|\n|hrs|mins|V");
             Activity[] activities = new Activity[0]; //set to 0 initially
             double currentTime = 8.30;
+            double endTime = 22.00; /* millitary time */
 
 
 
@@ -24,13 +25,13 @@ public class Planner {
                 boolean allowed = true;
                 input.nextLine();
 
-                Activity newActivity = new Activity(name,duration,id,startRange,endRange, allowed);
+                Activity newActivity = new Activity(name,duration,id,startRange,endRange, allowed,0,0);
                 activities = addActivity(activities, newActivity); //update array with new activty
             }
 
 
             System.out.print("\n");
-
+     
                for(int i =0; i <= activities.length-1; i++) {
                    System.out.print(activities[i].name);
                    System.out.print("\n");
@@ -45,11 +46,14 @@ public class Planner {
                    System.out.print("\n");
 
 
+
                }
 
                checkAllowance(activities, currentTime);
 
+       
 
+           
             input.close();
 
         } catch (FileNotFoundException e) {
@@ -80,13 +84,12 @@ public class Planner {
         /* first check if the activity starts before the selected start-time within planner, 8:30 am*/
         for (int i = 0; i <= activities.length-1; i++) {
             if (activities[i].startRange < currentTime) {
-                activities[i].allowed = false;
+                activities[i].allowed = false; /* non valid activity, starts before allowed time*/
             }
         }
     }
 
-    // convert military time to standard time
-    public static String convertToStandard(double time) {
+    public static String convertStandard(double time) {
         String timeString = "";
         int hours = (int) time;
         int minutes = (int) ((time - hours) * 60);
@@ -104,8 +107,9 @@ public class Planner {
         return timeString;
     }
 
+
     // convert standard time to military time
-    public static double convertToMilitary(String time) {
+    public static double convertTime(String time) {
         double timeDouble = 0;
         int hours = Integer.parseInt(time.substring(0, 2));
         int minutes = Integer.parseInt(time.substring(3, 5));
@@ -116,16 +120,5 @@ public class Planner {
         return timeDouble;
     }
 
-    // convert hours to mins
-    public static double convertHoursToMins(double hours) {
-        double mins = hours * 60;
-        return mins;
-    }
 
-    // convert mins to hours
-    public static double convertMinsToHours(double mins) {
-        double hours = mins / 60;
-        return hours;
-    }
-}
-
+}/*end of class*/
