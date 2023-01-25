@@ -1,30 +1,24 @@
 package dailyplanner;
-
 public class Activity {
 
-    public String name;
-    public double duration;
-    public int id;
-    public double startRange;
-    public double endRange;
-    public boolean allowed;
-    public double actualStart;
-    public double actualEnd;
+    public String name; // name of the activity
+    public double duration; // duration of the activity
+    public double startRange; // range of time the activity can start
+    public double endRange; // range of time the activity can end
+    public boolean allowed; // if the activity is allowed to be scheduled
+    public double actualStart; // the actual start time of the activity
+    public double actualEnd; // the actual end time of the activity
 
-    public Activity(String name, double duration, int id,double startRange,double endRange, boolean allowed
-            ,double actualStart, double actualEnd) {
-
+    public Activity(String name, double duration, double startRange, double endRange, boolean allowed,
+            double actualStart, double actualEnd) {
         this.name = name;
         this.duration = duration;
-        this.id = id;
         this.startRange = startRange;
         this.endRange = endRange;
         this.allowed = allowed;
         this.actualStart = actualStart;
         this.actualEnd = actualEnd;
-
     }
-
 
     public double getStartRange() {
         return startRange;
@@ -45,19 +39,16 @@ public class Activity {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public double getDuration() {
         return duration;
     }
+
     public void setDuration(double duration) {
         this.duration = duration;
-    }
-    public int getID() {
-        return id;
-    }
-    public void setValue(int id) {
-        this.id = id;
     }
 }

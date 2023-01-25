@@ -1,4 +1,8 @@
-V1-Go to the Gym-9.30-12.30-2.5hrs
-V3-Eat Food-11.30-12.00-0.5hrs
-V2-More Things-8.30-4.30-2hrs
-V9-Idk More Things-8.30-7.30-50mins
+Go to the Gym-830-1130-2 hrs
+Eat Lunch-1200-1300-30 mins
+Homework-1200-1630-3 hrs
+Eat Breakfast-830-930-30 mins
+Ponder Life-400-600-30 mins
+3649 Lecture-1600-1730-1.5 hrs
+Read Book-1800-1830-30 mins
+Eat Dinner-1800-2000-30 mins

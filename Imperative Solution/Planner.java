@@ -6,46 +6,47 @@ public class Planner {
 
         try {
             Scanner input = new Scanner(new File("test.txt"));
-            input.useDelimiter("-|\n|hrs|mins|V");
+            input.useDelimiter("-|\n");
             Activity[] activities = new Activity[0]; // set to 0 initially
-            double currentTime = 8.50;
-            double endTime = 22.00; /* millitary time */
+            double minimumTime = 8.50;
+            double maximumTime = 22.00; /* millitary time */
 
             while (input.hasNext()) { // begin parsing input file for data
-
-                int id = input.nextInt();
                 String name = input.next();
                 double startRange = input.nextDouble();
                 double endRange = input.nextDouble();
-                double duration = input.nextDouble();
+                String durationInStr = input.next();
                 boolean allowed = true;
                 input.nextLine();
 
-                Activity newActivity = new Activity(name, duration, id, startRange, endRange, allowed, 0, 0);
+                startRange = convertTimeRange((int) startRange); // convert start time to decimal
+                endRange = convertTimeRange((int) endRange); // convert end time to decimal
+                double duration = getDurationInHours(durationInStr); // convert duration to hours
+
+                Activity newActivity = new Activity(name, duration, startRange, endRange, allowed, 0, 0);
                 activities = addActivity(activities, newActivity); // update array with new activty
             }
 
             System.out.print("\n");
 
+            generateSchedule(activities, minimumTime, maximumTime);
+
             /*
-            for (int i = 0; i <= activities.length - 1; i++) {
-                System.out.print(activities[i].name);
-                System.out.print("\n");
-                System.out.print(activities[i].duration);
-                System.out.print("\n");
-                System.out.print(activities[i].id);
-                System.out.print("\n");
-                System.out.print(activities[i].startRange);
-                System.out.print("\n");
-                System.out.print(activities[i].endRange);
-                System.out.print("\n");
-                System.out.print("\n");
-
-            }
-            */
-
-            generateSchedule(activities, currentTime);
-            checkAllowance(activities, currentTime);
+             * for (int i = 0; i <= activities.length - 1; i++) {
+             * System.out.print(activities[i].name);
+             * System.out.print("\n");
+             * System.out.print(activities[i].duration);
+             * System.out.print("\n");
+             * System.out.print(activities[i].id);
+             * System.out.print("\n");
+             * System.out.print(activities[i].startRange);
+             * System.out.print("\n");
+             * System.out.print(activities[i].endRange);
+             * System.out.print("\n");
+             * System.out.print("\n");
+             * 
+             * }
+             */
 
             input.close();
 
@@ -56,18 +57,105 @@ public class Planner {
 
     }
 
-    private static void checkAllowance(Activity[] activities, double currentTime) {
-        /*
-         * first check if the activity starts before the selected start-time within
-         * planner, 8:30 am
-         */
-        for (int i = 0; i <= activities.length - 1; i++) {
-            if (activities[i].startRange < currentTime) {
-                activities[i].allowed = false; /* non valid activity, starts before allowed time */
+    public static void generateSchedule(Activity[] activities, double minimumTime, double maximumTime) {
+        // Sort the activities by their start time
+        java.util.Arrays.sort(activities, (a1, a2) -> {
+            if (a1.getStartRange() == a2.getStartRange()) {
+                return Double.compare(a1.getEndRange(), a2.getEndRange());
+            } else {
+                return Double.compare(a1.getStartRange(), a2.getStartRange());
+            }
+        });
+
+        // Check the activities for any issues
+        checkAllowance(activities, minimumTime, maximumTime);
+
+        // Initialize the schedule
+        Activity[] schedule = new Activity[activities.length];
+        double scheduledTime = activities[0].getStartRange();
+        int index = 0;
+        schedule[index] = activities[0];
+        schedule[index].actualStart = scheduledTime;
+        schedule[index].actualEnd = scheduledTime + activities[0].getDuration();
+        scheduledTime += activities[0].getDuration();
+        index++;
+
+        // Iterate through the activities
+        for (int i = 1; i < activities.length; i++) {
+            Activity a = activities[i];
+            if (scheduledTime < a.getStartRange()) {
+                scheduledTime = a.getStartRange();
+            }
+            double start = scheduledTime;
+
+            if (scheduledTime + a.getDuration() > a.getEndRange()) {
+                activities[i].allowed = false;
+                break;
+            } else {
+                double end = scheduledTime + a.getDuration();
+                if (start < end) {
+                    a.actualStart = start;
+                    a.actualEnd = end;
+                    scheduledTime = end;
+                    schedule[index] = a;
+                    index++;
+                }
+            }
+        }
+
+        // Print the schedule
+        printSchedule(activities);
+
+    }
+
+    public static void printSchedule(Activity[] activities) {
+        for (int i = 0; i < activities.length; i++) {
+            if (activities[i].allowed) {
+                System.out.println(activities[i].getName() + ": " + activities[i].actualStart + " - "
+                        + activities[i].actualEnd);
             }
         }
     }
 
+    // convert the values of the time ranges from military time to decimal
+    public static double convertTimeRange(int time) {
+        int hours = time / 100;
+        int mins = time % 100;
+        return hours + (double) mins / 60;
+    }
+
+    // convert the duration into hours if it is in minutes
+    public static double getDurationInHours(String duration) {
+        String[] arr = duration.split(" ");
+        double durationInHours;
+        String mins = "mins";
+
+        if (arr[1].trim().equals(mins)) {
+            durationInHours = Double.parseDouble(arr[0]) / 60;
+        } else {
+            durationInHours = Double.parseDouble(arr[0]);
+        }
+        return durationInHours;
+    }
+
+    /*
+     * check if the activity starts before the selected start-time within planner,
+     * or after the selected end-time within planner. Also check if the duration of
+     * the activity is greater than the time range. If so, the activity is not
+     * allowed to be added to the schedule.
+     */
+    private static void checkAllowance(Activity[] activities, double minimumTime, double maximumTime) {
+        for (int i = 0; i <= activities.length - 1; i++) {
+            if (activities[i].startRange < minimumTime || activities[i].endRange > maximumTime) {
+                activities[i].allowed = false;
+            }
+            if (activities[i].duration > (activities[i].endRange - activities[i].startRange)) {
+                activities[i].allowed = false;
+            }
+        }
+    }
+
+    // add new activity to the array of activities
     private static Activity[] addActivity(Activity[] activities, Activity activityToAdd) {
         Activity[] newActivities = new Activity[activities.length + 1];
         System.arraycopy(activities, 0, newActivities, 0, activities.length);
@@ -76,66 +164,7 @@ public class Planner {
         return newActivities;
     }
 
-    public static void generateSchedule(Activity[] activities, double currentTime) {
-
-        for (int i = 0; i < activities.length; i++) {
-            if (activities[i].duration > (activities[i].endRange - activities[i].startRange)) {
-                System.out.println("Activity " + activities[i].name
-                        + " not included in the schedule because the duration is greater than the time range.");
-                continue;
-            }
-            for (int j = i + 1; j < activities.length; j++) {
-                Activity a1 = activities[i];
-                Activity a2 = activities[j];
-                if (a1.startRange == a2.startRange) {
-                    double a1End = a1.startRange + a1.duration;
-                    double a2End = a2.startRange + a2.duration;
-                    if (a1End > a2.endRange) {
-                        Activity temp = activities[i];
-                        activities[i] = activities[j];
-                        activities[j] = temp;
-                    } else if (a2End > a1.endRange) {
-                        Activity temp = activities[j];
-                        activities[j] = activities[i];
-                        activities[i] = temp;
-                    }
-                }
-            }
-
-            outputSchedule(activities);
-        }
-    }
-
-    private static void outputSchedule(Activity[] activities) {
-        for (int i = 0; i < activities.length; i++) {
-            if (activities[i].startRange < 8.5 || activities[i].endRange > 22.0) {
-                System.out.println("Activity " + activities[i].name
-                        + " not included in the schedule because it starts before 8.5 or ends after 22.0");
-                continue;
-            }
-            if (activities[i].duration > (activities[i].endRange - activities[i].startRange)) {
-                System.out.println("Activity " + activities[i].name
-                        + " not included in the schedule because the duration is greater than the time range");
-                continue;
-            }
-            double current = activities[i].startRange;
-            for (int j = i + 1; j < activities.length; j++) {
-                if (activities[i].startRange == activities[j].startRange) {
-                    if (activities[i].duration > activities[j].duration) {
-                        activities[j].startRange = activities[i].startRange + activities[i].duration;
-                    }
-                }
-            }
-            while (current < activities[i].endRange) {
-                System.out.println(current + " - " + activities[i].endRange + ": " + activities[i].name);
-                current += activities[i].duration;
-                if (current > activities[i].endRange) {
-                    break;
-                }
-            }
-        }
-    }
-
+    // convert military time to standard time
     public static String convertStandard(double time) {
         String timeString = "";
         int hours = (int) time;
@@ -165,36 +194,4 @@ public class Planner {
         timeDouble = hours + (minutes / 60.0);
         return timeDouble;
     }
-
-    /*
-     * NIMRAT'S CODE
-     * public static void printSchedule(Activity[] activities) // this method takes
-     * in a array of activities and outputs it to the console.
-     * {
-     * for(Activity actvity : activities) // iterates each activity in the act
-     * {
-     * outputFormatter(actvity);
-     * }
-     * }
-     * public static void outputFormatter(Activity activity) // prints out the
-     * activity for that time slot
-     * {
-     * 
-     * system.out.println("    " +
-     * "-------------------------------------------------------");
-     * system.out.println("    " + "|");
-     * system.out.println("    " + "|");
-     * system.out.println("    " + "|"+ " Time: " +
-     * convertStandard(activity.actualStart) + "  -  " +
-     * convertStandard(activity.actualEnd) );
-     * system.out.println("    " + "|");
-     * system.out.println("    " + "|" + " Task: " + actvity.name);
-     * system.out.println("    " + "|");
-     * system.out.println("    " + "|");
-     * system.out.println("    " +
-     * "--------------------------------------------------------");
-     * 
-     * 
-     * }
-     */
 }
