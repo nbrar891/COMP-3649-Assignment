@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.Scanner;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class Planner {
     public static void main(String[] args) {
@@ -69,6 +71,9 @@ public class Planner {
             }
         });
 
+        Arrays.sort(activities, Comparator.comparingDouble(Activity::getDuration));
+
+
         return allowedActivities;
     }
 
@@ -91,7 +96,8 @@ public class Planner {
             }
             double start = scheduledTime;
 
-            if (scheduledTime + a.getDuration() > a.getEndRange()) {
+            if ( (scheduledTime + a.getDuration() > a.getEndRange()) 
+                || (start + a.getDuration() > a.getEndRange())) {
                 activities[i].allowed = false;
             } else {
                 double end = scheduledTime + a.getDuration();
