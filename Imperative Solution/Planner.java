@@ -8,8 +8,8 @@ public class Planner {
             Scanner input = new Scanner(new File("test.txt"));
             input.useDelimiter("-|\n");
             Activity[] activities = new Activity[0]; // set to 0 initially
-            double minimumTime = 8.00;
-            double maximumTime = 17.00; /* millitary time */
+            double minimumTime = 8.30;
+            double maximumTime = 22.00; /* millitary time */
 
             while (input.hasNext()) { // begin parsing input file for data
                 String name = input.next();
@@ -122,14 +122,14 @@ public class Planner {
     }
 
     // convert the values of the time ranges from military time to decimal
-    public static double convertDecimalTimeToMilitary(int time) {
+    public static double convertMilitaryToDecimal(int time) {
         int hours = time / 100;
         int mins = time % 100;
         return hours + (double) mins / 60;
     }
 
     // convert the values of the time ranges from decimal to military time
-    public static int convertTimeRange(int time) {
+    public static int convertDecimalToMilitary(int time) {
         int hours = time / 100;
         int mins = time % 100;
         return hours * 100 + mins;
