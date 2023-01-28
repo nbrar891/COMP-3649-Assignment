@@ -8,8 +8,8 @@ public class Planner {
             Scanner input = new Scanner(new File("test.txt"));
             input.useDelimiter("-|\n");
             Activity[] activities = new Activity[0]; // set to 0 initially
-            double minimumTime = 8.50;
-            double maximumTime = 22.00; /* millitary time */
+            double minimumTime = 8.00;
+            double maximumTime = 17.00; /* millitary time */
 
             while (input.hasNext()) { // begin parsing input file for data
                 String name = input.next();
@@ -90,15 +90,19 @@ public class Planner {
 
             if (scheduledTime + a.getDuration() > a.getEndRange()) {
                 activities[i].allowed = false;
-                break;
             } else {
                 double end = scheduledTime + a.getDuration();
                 if (start < end) {
-                    a.actualStart = start;
-                    a.actualEnd = end;
-                    scheduledTime = end;
-                    schedule[index] = a;
-                    index++;
+                    if (scheduledTime > a.getEndRange()) {
+                        a.actualStart = a.getStartRange();
+                        a.actualEnd = a.getEndRange();
+                    } else {
+                        a.actualStart = start;
+                        a.actualEnd = end;
+                        scheduledTime = end;
+                        schedule[index] = a;
+                        index++;
+                    }                    
                 }
             }
         }
@@ -118,10 +122,17 @@ public class Planner {
     }
 
     // convert the values of the time ranges from military time to decimal
-    public static double convertTimeRange(int time) {
+    public static double convertDecimalTimeToMilitary(int time) {
         int hours = time / 100;
         int mins = time % 100;
         return hours + (double) mins / 60;
+    }
+
+    // convert the values of the time ranges from decimal to military time
+    public static int convertTimeRange(int time) {
+        int hours = time / 100;
+        int mins = time % 100;
+        return hours * 100 + mins;
     }
 
     // convert the duration into hours if it is in minutes
