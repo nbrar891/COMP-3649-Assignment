@@ -8,9 +8,10 @@ public class Activity {
     public boolean allowed; // if the activity is allowed to be scheduled
     public double actualStart; // the actual start time of the activity
     public double actualEnd; // the actual end time of the activity
+    public int priority; // the priority of the activity. 1 = low, 2 = medium, 3 = high
 
     public Activity(String name, double duration, double startRange, double endRange, boolean allowed,
-            double actualStart, double actualEnd) {
+            double actualStart, double actualEnd, int priority) {
         this.name = name;
         this.duration = duration;
         this.startRange = startRange;
@@ -18,6 +19,7 @@ public class Activity {
         this.allowed = allowed;
         this.actualStart = actualStart;
         this.actualEnd = actualEnd;
+        this.priority = priority;
     }
 
     public double getStartRange() {
@@ -50,5 +52,21 @@ public class Activity {
 
     public void setDuration(double duration) {
         this.duration = duration;
+    }
+
+    public boolean isAllowed() {
+        return allowed;
+    }
+
+    public void setAllowed(boolean allowed) {
+        this.allowed = allowed;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }

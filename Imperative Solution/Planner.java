@@ -19,13 +19,14 @@ public class Planner {
                 double endRange = input.nextDouble();
                 String durationInStr = input.next();
                 boolean allowed = true;
-                input.nextLine();
+                String[] tokens = input.nextLine().trim().split("-");
+                int priority = Integer.parseInt(tokens[tokens.length-1]);
 
                 startRange = convertMilitaryToDecimal((int) startRange); // convert start time to decimal
                 endRange = convertMilitaryToDecimal((int) endRange); // convert end time to decimal
                 double duration = getDurationInHours(durationInStr); // convert duration to hours
 
-                Activity newActivity = new Activity(name, duration, startRange, endRange, allowed, 0, 0);
+                Activity newActivity = new Activity(name, duration, startRange, endRange, allowed, 0, 0, priority);
                 activities = addActivity(activities, newActivity); // update array with new activty
             }
 
@@ -95,6 +96,7 @@ public class Planner {
         schedule[index] = activities[0];
         schedule[index].actualStart = scheduledTime;
         schedule[index].actualEnd = scheduledTime + activities[0].getDuration();
+        schedule[index].priority = activities[0].getPriority();
         scheduledTime += activities[0].getDuration();
         index++;
 
@@ -120,7 +122,14 @@ public class Planner {
              */
             if (scheduledTime + a.getDuration() > a.getEndRange()) {
                 activities[i].allowed = false;
+            } // Case 2: the current activity will cause the next activity to not be able to
+              // be scheduled, and the next activity has a higher priority.
+            else if (i + 1 < activities.length && 
+                    scheduledTime + a.getDuration() + activities[i + 1].getDuration() > activities[i + 1].getEndRange()
+                    && a.getPriority() < activities[i + 1].getPriority()) {
+                activities[i].allowed = false;
             } else {
+                
                 // set the end time of current activity to scheduledTime + duration.
                 double end = scheduledTime + a.getDuration();
 
