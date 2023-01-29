@@ -34,6 +34,8 @@ public class Planner {
             // create a new array of activities that are allowed to be scheduled
             Activity[] allowedActivities = createAllowedActivitiesOnlyArray(activities, minimumTime, maximumTime);
 
+            System.out.print("\n");
+
             generateSchedule(allowedActivities);
 
             input.close();
@@ -60,19 +62,25 @@ public class Planner {
         for (int i = 0; i < activities.length; i++) {
             if (activities[i].allowed) {
                 allowedActivities = addActivity(allowedActivities, activities[i]);
+            } else {
+                System.out.println(activities[i].getName() + " is not allowed to be scheduled.");
             }
         }
-        // sort the activities by their start time
-        java.util.Arrays.sort(allowedActivities, (a1, a2) -> {
-            if (a1.getStartRange() == a2.getStartRange()) {
-                return Double.compare(a1.getEndRange(), a2.getEndRange());
-            } else {
-                return Double.compare(a1.getStartRange(), a2.getStartRange());
+
+        /*
+         * Organize the activities by their end time. The lower end time goes first.
+         * If the end times are the same, then organize based on start time.
+        */
+        Arrays.sort(allowedActivities, new Comparator<Activity>() {
+            @Override
+            public int compare(Activity a1, Activity a2) {
+                if (a1.getEndRange() == a2.getEndRange()) {
+                    return Double.compare(a1.getStartRange(), a2.getStartRange());
+                } else {
+                    return Double.compare(a1.getEndRange(), a2.getEndRange());
+                }
             }
         });
-
-        Arrays.sort(activities, Comparator.comparingDouble(Activity::getDuration));
-
 
         return allowedActivities;
     }
@@ -91,6 +99,7 @@ public class Planner {
         // Iterate through the activities
         for (int i = 1; i < activities.length; i++) {
             Activity a = activities[i];
+            
             if (scheduledTime < a.getStartRange()) {
                 scheduledTime = a.getStartRange();
             }
