@@ -37,7 +37,7 @@ public class Planner {
 
             System.out.print("\n");
 
-            generateSchedule(allowedActivities);
+            generateSchedule(allowedActivities, minimumTime, maximumTime);
 
             input.close();
 
@@ -88,20 +88,14 @@ public class Planner {
         return allowedActivities;
     }
 
-    public static void generateSchedule(Activity[] activities) {
+    public static void generateSchedule(Activity[] activities, double minimumTime, double maximumTime) {
         // Initialize the schedule
         Activity[] schedule = new Activity[activities.length];
-        double scheduledTime = activities[0].getStartRange();
+        double scheduledTime = minimumTime;
         int index = 0;
-        schedule[index] = activities[0];
-        schedule[index].actualStart = scheduledTime;
-        schedule[index].actualEnd = scheduledTime + activities[0].getDuration();
-        schedule[index].priority = activities[0].getPriority();
-        scheduledTime += activities[0].getDuration();
-        index++;
 
         // Iterate through the activities
-        for (int i = 1; i < activities.length; i++) {
+        for (int i = 0; i < activities.length; i++) {
             Activity a = activities[i];
 
             /*
