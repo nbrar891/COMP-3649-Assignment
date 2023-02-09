@@ -10,8 +10,8 @@ public class Planner {
             Scanner input = new Scanner(new File("test.txt"));
             input.useDelimiter("-|\n");
             Activity[] activities = new Activity[0]; // set to 0 initially
-            double minimumTime = 8.30;
-            double maximumTime = 22.00;
+            double minimumTime = 8.50;
+            double maximumTime = 23.50;
 
             while (input.hasNext()) { // begin parsing input file for data
                 String name = input.next();
@@ -22,9 +22,9 @@ public class Planner {
                 String[] tokens = input.nextLine().trim().split("-");
                 int priority = Integer.parseInt(tokens[tokens.length-1]);
 
-                startRange = convertMilitaryToDecimal((int) startRange); // convert start time to decimal
-                endRange = convertMilitaryToDecimal((int) endRange); // convert end time to decimal
-                double duration = getDurationInHours(durationInStr); // convert duration to hours
+                startRange = Utility.convertMilitaryToDecimal((int) startRange); // convert start time to decimal
+                endRange = Utility.convertMilitaryToDecimal((int) endRange); // convert end time to decimal
+                double duration = Utility.getDurationInHours(durationInStr); // convert duration to hours
 
                 Activity newActivity = new Activity(name, duration, startRange, endRange, allowed, 0, 0, priority);
                 activities = addActivity(activities, newActivity); // update array with new activty
@@ -136,58 +136,7 @@ public class Planner {
         }
 
         // Print the schedule
-        printSchedule(activities);
-    }
-
-    public static void printSchedule(Activity[] activities) {
-        for (int i = 0; i < activities.length; i++) {
-            if (activities[i].allowed) {
-                int start = convertDecimalToMilitary(activities[i].actualStart);
-                String startStr = convertMilitaryToStandard(start);
-                int end = convertDecimalToMilitary(activities[i].actualEnd);
-                String endStr = convertMilitaryToStandard(end);
-                System.out.println(activities[i].getName() + ": " + startStr + " - " + endStr);
-            }
-        }
-    }
-
-    // convert the values of the time ranges from military time to decimal
-    public static double convertMilitaryToDecimal(int time) {
-        int hours = time / 100;
-        int mins = time % 100;
-        return hours + (double) mins / 60;
-    }
-
-    // convert the values of the time ranges from decimal to military time
-    public static int convertDecimalToMilitary(double time) {
-        int hours = (int) time;
-        int minutes = (int) Math.round((time - hours) * 60);
-        if (hours <= 12) {
-            if (hours == 0) {
-                hours = 12;
-            }
-            return (hours * 100) + minutes;
-        } else {
-            hours -= 12;
-            if (hours == 0) {
-                hours = 12;
-            }
-            return (hours * 100) + minutes + 1200;
-        }
-    }
-
-    // convert the duration into hours if it is in minutes
-    public static double getDurationInHours(String duration) {
-        String[] arr = duration.split(" ");
-        double durationInHours;
-        String mins = "mins";
-
-        if (arr[1].trim().equals(mins)) {
-            durationInHours = Double.parseDouble(arr[0]) / 60;
-        } else {
-            durationInHours = Double.parseDouble(arr[0]);
-        }
-        return durationInHours;
+        Utility.printSchedule(activities);
     }
 
     /*
@@ -229,30 +178,5 @@ public class Planner {
         newActivities[newActivities.length - 1] = activityToAdd;
 
         return newActivities;
-    }
-
-    // convert military time to standard time
-    public static String convertMilitaryToStandard(double time) {
-        String timeString = "";
-        int hours = (int) time / 100;
-        int minutes = (int) time % 100;
-        String am_pm = hours >= 12 ? "pm" : "am";
-        hours = hours % 12;
-        hours = hours == 0 ? 12 : hours;
-        String formattedMinutes = String.format("%02d", minutes);
-        timeString = hours + ":" + formattedMinutes + am_pm;
-        return timeString;
-    }
-
-    // convert standard time to military time
-    public static double convertStandardToMilitary(String time) {
-        double timeDouble = 0;
-        int hours = Integer.parseInt(time.substring(0, 2));
-        int minutes = Integer.parseInt(time.substring(3, 5));
-        if (time.substring(6, 8).equals("pm")) {
-            hours += 12;
-        }
-        timeDouble = hours + (minutes / 60.0);
-        return timeDouble;
     }
 }

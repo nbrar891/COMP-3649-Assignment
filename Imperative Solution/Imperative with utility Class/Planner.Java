@@ -10,8 +10,8 @@ public class Planner {
             Scanner input = new Scanner(new File("test.txt"));
             input.useDelimiter("-|\n");
             Activity[] activities = new Activity[0]; // set to 0 initially
-            double minimumTime = 8.30;
-            double maximumTime = 22.00;
+            double minimumTime = 8.50;
+            double maximumTime = 23.50;
 
             while (input.hasNext()) { // begin parsing input file for data
                 String name = input.next();
@@ -179,8 +179,4 @@ public class Planner {
 
         return newActivities;
     }
-
- 
-
-  
 }
