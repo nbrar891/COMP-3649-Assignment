@@ -18,7 +18,8 @@ public class Planner {
             System.out.println("Run the program again." );
 
         } finally {
-            scan.close();
+           if(scan != null)
+               scan.close();
         }
 
     }
