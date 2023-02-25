@@ -2,16 +2,15 @@ package dailyplanner;
 public class Activity {
 
     public String name; // name of the activity
-    public double duration; // duration of the activity
-    public double startRange; // range of time the activity can start
-    public double endRange; // range of time the activity can end
+    public int duration; // duration of the activity
+    public int startRange; // range of time the activity can start
+    public int endRange; // range of time the activity can end
     public boolean allowed; // if the activity is allowed to be scheduled
-    public double actualStart; // the actual start time of the activity
-    public double actualEnd; // the actual end time of the activity
-    public int priority; // the priority of the activity. 1 = low, 2 = medium, 3 = high
+    public int actualStart; // the actual start time of the activity
+    public int actualEnd; // the actual end time of the activity
 
-    public Activity(String name, double duration, double startRange, double endRange, boolean allowed,
-            double actualStart, double actualEnd, int priority) {
+    public Activity(String name, int duration, int startRange, int endRange, boolean allowed,
+            int actualStart, int actualEnd) {
         this.name = name;
         this.duration = duration;
         this.startRange = startRange;
@@ -19,22 +18,21 @@ public class Activity {
         this.allowed = allowed;
         this.actualStart = actualStart;
         this.actualEnd = actualEnd;
-        this.priority = priority;
     }
 
-    public double getStartRange() {
+    public int getStartRange() {
         return startRange;
     }
 
-    public void setStartRange(double startRange) {
+    public void setStartRange(int startRange) {
         this.startRange = startRange;
     }
 
-    public double getEndRange() {
+    public int getEndRange() {
         return endRange;
     }
 
-    public void setEndRange(double endRange) {
+    public void setEndRange(int endRange) {
         this.endRange = endRange;
     }
 
@@ -46,11 +44,11 @@ public class Activity {
         this.name = name;
     }
 
-    public double getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(double duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
@@ -62,11 +60,19 @@ public class Activity {
         this.allowed = allowed;
     }
 
-    public int getPriority() {
-        return priority;
+    public int getActualStart() {
+        return actualStart;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setActualStart(int actualStart) {
+        this.actualStart = actualStart;
+    }
+
+    public int getActualEnd() {
+        return actualEnd;
+    }
+
+    public void setActualEnd(int actualEnd) {
+        this.actualEnd = actualEnd;
     }
 }
