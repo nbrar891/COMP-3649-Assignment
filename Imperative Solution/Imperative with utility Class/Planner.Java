@@ -86,10 +86,10 @@ public class Planner {
         }
 
         /*
-         * Organize the activities by their start time. The lower start time goes first.
-         * If the start times are the same, then compare based on duration (lower goes
+         * Organize the activities by their end time. The lower end time goes first.
+         * If the start times are the same, then compare based on start time (lower goes
          * first).
-         * If the duration and start times are the same, the compare based on end time
+         * If the duration and start times are the same, the compare based on duration
          * (lower goes first).
          */
         Arrays.sort(allowedActivities, new Comparator<Activity>() {
