@@ -1,4 +1,3 @@
-package dailyplanner;
 public class Activity {
 
     public String name; // name of the activity
