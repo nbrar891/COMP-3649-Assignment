@@ -1,8 +1,9 @@
 main(File) :-
     % Parse the file and get the list of activities
     parse_file(File, Activities),
+    sort_activities_by_end_time(Activities, SortedActivities),
     % Print each activity
-    print_activities(Activities).
+    print_activities(SortedActivities).
 
 print_activities([]).
 print_activities([activity(Name, Start, End, Dur, Allowed, ActualStart, ActualEnd)|Rest]) :-
@@ -41,3 +42,8 @@ parse_lines(Stream, [Activity|Rest]) :-
     % Parse the remaining lines from the file
     parse_lines(Stream, Rest).
 
+sort_activities_by_end_time(Activities, SortedActivities) :-
+    predsort(sort_by_end_time, Activities, SortedActivities).
+
+sort_by_end_time(Order, activity(_, _, EndTime1, _, _, _, _), activity(_, _, EndTime2, _, _, _, _)) :-
+    compare(Order, EndTime1, EndTime2).
