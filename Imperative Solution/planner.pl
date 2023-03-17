@@ -6,9 +6,9 @@ main(File) :-
     print_activities(SortedActivities).
 
 print_activities([]).
-print_activities([activity(Name, Start, End, Dur, Allowed, ActualStart, ActualEnd)|Rest]) :-
+print_activities([activity(Name, StartRange, EndRange, Dur, Allowed, ActualStart, ActualEnd)|Rest]) :-
     % Print the activity name, start and end times, and duration
-    format("Activity: ~w, Start: ~w, End: ~w, Duration: ~w, Allowed: ~w, ActualStart: ~w, ActualEnd: ~w~n", [Name, Start, End, Dur,Allowed, ActualStart, ActualEnd]),
+    format("Activity: ~w, StartRange: ~w, EndRange: ~w, Duration: ~w, Allowed: ~w, ActualStart: ~w, ActualEnd: ~w~n", [Name, StartRange, EndRange, Dur,Allowed, ActualStart, ActualEnd]),
     % Recursively print the remaining activities
     print_activities(Rest).
 
@@ -32,13 +32,13 @@ parse_lines(Stream, [Activity|Rest]) :-
     % Split the string into a list of components using the "-" delimiter
     split_string(Atom, "-", "", [NameStr, StartStr, EndStr, DurStr|_]),
     % Convert the start and end times from strings to Prolog number
-    atom_number(StartStr, StartTime),
-    atom_number(EndStr, EndTime),
+    atom_number(StartStr, StartRange),
+    atom_number(EndStr, EndRange),
     % Extract the duration value from the duration string
     split_string(DurStr, " ", "", [DurValue,_]),
     atom_number(DurValue, DurNum),
     % Ignore the duration unit and create an activity term from the components
-    Activity = activity(NameStr, StartTime, EndTime, DurNum, true, 0, 0),
+    Activity = activity(NameStr, StartRange, EndRange, DurNum, true, 0, 0),
     % Parse the remaining lines from the file
     parse_lines(Stream, Rest).
 
