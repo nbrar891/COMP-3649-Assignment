@@ -35,6 +35,7 @@ public class Planner {
                 activities = addActivity(activities, newActivity); // update array with new activty
             }
 
+            int index = 0, extraTime = 0;
             // print the current file name
             // System.out.println("Current file being ran: " + filename + "\n");
 
@@ -42,7 +43,7 @@ public class Planner {
             Activity[] allowedActivities = createAllowedActivitiesOnlyArray(activities, minimumTime, maximumTime);
 
             // schedule the allowed activities
-            if (scheduleActivities(allowedActivities, 0, minimumTime)) {
+            if (scheduleActivities(allowedActivities, index, minimumTime, minimumTime, extraTime) && allowedActivities.length > 0) {
                 System.out.println("Schedule is possible. Here is the result:\n\n");
                 Utility.printSchedule(allowedActivities);
             } else {
@@ -110,32 +111,35 @@ public class Planner {
         return allowedActivities;
     }
 
-    public static boolean scheduleActivities(Activity[] activities, int index, int previousActivityEndTime) {
+    public static boolean scheduleActivities(Activity[] activities, int index, int previousActivityStartTime, int previousActivityEndTime, int extraTime) {
         // Base case:
         if (index >= activities.length || activities[index] == null) {
             return true;
-        }
-
+        } 
         // Recursive case:
-        if (previousActivityEndTime > activities[index].startRange) {
-            activities[index].actualStart = previousActivityEndTime;
-            activities[index].actualEnd = Utility.addMinutesToTime(previousActivityEndTime, activities[index].duration);
-            if (activities[index].actualEnd > activities[index].endRange) {
-                return false;
+        int startTime = Utility.addMinutesToTime(activities[index].startRange, extraTime);
+        int endTime = Utility.addMinutesToTime(startTime, activities[index].duration);    
+        while (endTime <= activities[index].endRange) {
+            boolean conflict = false;
+            for (int prevActivity = 0; prevActivity < index; prevActivity++) { // does current activity conflict with any of the previous activities
+                if (endTime > activities[prevActivity].actualStart && startTime < activities[prevActivity].actualEnd) {
+                    conflict = true;
+                    break;
+                }
             }
-        } else {
-            activities[index].actualStart = activities[index].startRange;
-            activities[index].actualEnd = Utility.addMinutesToTime(activities[index].startRange, activities[index].duration);
-        }
-
-        previousActivityEndTime = activities[index].actualEnd;
-
-        if (scheduleActivities(activities, index + 1, previousActivityEndTime)) {
-            return true;
-        } else {
-            return scheduleActivities(activities, index, previousActivityEndTime + 30);
-        }
+            if (!conflict) { // if no conflict, then schedule the activity and recurse to the next activity
+                activities[index].actualStart = startTime;
+                activities[index].actualEnd = endTime;
+                if (scheduleActivities(activities, index + 1, startTime, endTime, 0)) {
+                    return true;
+                }
+            } // if there is a conflict, then try the next time slot
+            startTime = Utility.addMinutesToTime(startTime, 1);
+            endTime = Utility.addMinutesToTime(startTime, activities[index].duration);
+        } 
+        return false;
     }
+    
 
     /*
      * check if the activity starts before the selected start-time within planner,
