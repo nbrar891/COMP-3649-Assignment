@@ -41,10 +41,11 @@ public class Planner {
 
             // create a new array of activities that are allowed to be scheduled
             Activity[] allowedActivities = createAllowedActivitiesOnlyArray(activities, minimumTime, maximumTime);
-
+            // sortSchedule(allowedActivities);
             // schedule the allowed activities
             if (scheduleActivities(allowedActivities, index, minimumTime, minimumTime, extraTime) && allowedActivities.length > 0) {
                 System.out.println("Schedule is possible. Here is the result:\n\n");
+                sortFinalSchedule(allowedActivities);
                 Utility.printSchedule(allowedActivities);
             } else {
                 System.out.println("Schedule is not possible.");
@@ -93,22 +94,24 @@ public class Planner {
          * If the duration and start times are the same, the compare based on duration
          * (lower goes first).
          */
-        Arrays.sort(allowedActivities, new Comparator<Activity>() {
+        return allowedActivities;
+    }
+
+    public static void sortFinalSchedule(Activity[] activities) {
+        Arrays.sort(activities, new Comparator<Activity>() {
             @Override
             public int compare(Activity a1, Activity a2) {
-                if (a1.startRange == a2.startRange) {
+                if (a1.actualStart == a2.actualStart) {
                     if (a1.duration == a2.duration) {
-                        return a1.endRange - a2.endRange;
+                        return a1.actualEnd - a2.actualEnd;
                     } else {
                         return a1.duration - a2.duration;
                     }
                 } else {
-                    return a1.startRange - a2.startRange;
+                    return a1.actualStart - a2.actualStart;
                 }
             }
         });
-
-        return allowedActivities;
     }
 
     public static boolean scheduleActivities(Activity[] activities, int index, int previousActivityStartTime, int previousActivityEndTime, int extraTime) {
