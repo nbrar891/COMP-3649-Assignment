@@ -15,6 +15,7 @@ print_activities([activity(Name, _, _, _, _, ActualStart, ActualEnd)|Rest]) :-
     format("Name: ~w, ActualStart: ~w, ActualEnd: ~w~n", [Name, ActualStart, ActualEnd]),
     print_activities(Rest).
 
+
 parse_file(File, Activities) :-
     % Open the file in read mode
     open(File, read, Stream),
