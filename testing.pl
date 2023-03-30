@@ -3,7 +3,8 @@ generate_start_times_helper(Start, End, Duration, StartTimes) :-
     EndTime =< End,
     StartTimes = [Start | RestStartTimes],
     add_minutes(Start, 15, NextStart),
-    generate_start_times_helper(NextStart, End, Duration, RestStartTimes).
+    generate_start_times_helper(NextStart, End, Duration, RestStartTimes),
+    !. % List is fully generated, stop backtracking
 generate_start_times_helper(_, _, _, []).
 
 generate_start_times(activity(_, StartRange, EndRange, Duration, _, _, _), StartTimes) :-
@@ -21,3 +22,17 @@ assign_start_time(activity(Name, StartRange, EndRange, Duration, Allowed, _, _),
     generate_start_times(activity(Name, StartRange, EndRange, Duration, Allowed, _, _), StartTimes),
     member(ActualStart, StartTimes),
     add_minutes(ActualStart, Duration, ActualEnd).
+
+schedule([], []).
+schedule([Activity|Rest], [ScheduledActivity|ScheduledRest]) :-
+    assign_start_time(Activity, ScheduledActivity),
+    schedule(Rest, ScheduledRest).
+
+
+
+
+
+
+
+
+
