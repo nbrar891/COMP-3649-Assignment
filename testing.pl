@@ -16,3 +16,8 @@ add_minutes(MilitaryTime, MinutesToAdd, Result) :-
     ResultHours is div(TotalMinutes, 60),
     ResultMinutes is mod(TotalMinutes, 60),
     Result is ResultHours * 100 + ResultMinutes.
+
+assign_start_time(activity(Name, StartRange, EndRange, Duration, Allowed, _, _), activity(Name, StartRange, EndRange, Duration, Allowed, ActualStart, ActualEnd)) :-
+    generate_start_times(activity(Name, StartRange, EndRange, Duration, Allowed, _, _), StartTimes),
+    member(ActualStart, StartTimes),
+    add_minutes(ActualStart, Duration, ActualEnd).
