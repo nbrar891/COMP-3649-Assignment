@@ -1,9 +1,10 @@
 :- consult('scheduling.pl').
+:- consult('helpers.pl').
 
 main(File) :-
     % Parse the file and get the list of activities
     parse_file(File, Activities),
-    schedule(Activities, [], NewAct),
+    schedule(Activities, NewAct),
     sort_activities_by_end_time(NewAct, Sorted),
     print_activities(Sorted).
 

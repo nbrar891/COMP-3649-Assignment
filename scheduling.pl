@@ -1,33 +1,37 @@
-:- consult('helpers.pl').
+generate_start_times_helper(Start, End, Duration, StartTimes) :-
+    add_minutes(Start, Duration, EndTime),
+    EndTime =< End,
+    StartTimes = [Start | RestStartTimes],
+    add_minutes(Start, 15, NextStart),
+    generate_start_times_helper(NextStart, End, Duration, RestStartTimes),
+    !. % List is fully generated, stop backtracking
+generate_start_times_helper(_, _, _, []).
 
-schedule([], _, []).
+generate_start_times(activity(_, StartRange, EndRange, Duration, _, _, _), StartTimes) :-
+    generate_start_times_helper(StartRange, EndRange, Duration, StartTimes).
 
-schedule([activity(Name, StartRange, EndRange, Dur, _, _, _)|Rest], EndTimes, [activity(Name, StartRange, EndRange, Dur, true, ActualStart, ActualEnd)|ScheduledRest]) :-
-    % Check for conflicts with previously scheduled activities
-    find_conflict(StartRange, EndTimes, ConflictStart),
-    % Calculate a new start time if there is a conflict
-    ( ConflictStart =< StartRange
-    -> ActualStart = StartRange
-    ; ActualStart = ConflictStart
-    ),
-    % Calculate the end time of the activity
-    add_minutes(ActualStart, Dur, ActualEnd),
-    % Add the activity to the list of scheduled activities and update the end times
-    append(EndTimes, [ActualEnd], NewEndTimes),
-    % Recursively schedule the remaining activities
-    schedule(Rest, NewEndTimes, ScheduledRest).
+add_minutes(MilitaryTime, MinutesToAdd, Result) :-
+    Hours is div(MilitaryTime, 100),
+    Minutes is mod(MilitaryTime, 100),
+    TotalMinutes is Hours * 60 + Minutes + MinutesToAdd,
+    ResultHours is div(TotalMinutes, 60),
+    ResultMinutes is mod(TotalMinutes, 60),
+    Result is ResultHours * 100 + ResultMinutes.
 
-% Find the earliest start time for an activity, given the start and end times of previously scheduled activities
-find_conflict(StartRange, [], StartRange).
+assign_start_time(activity(Name, StartRange, EndRange, Duration, Allowed, _, _), activity(Name, StartRange, EndRange, Duration, Allowed, ActualStart, ActualEnd)) :-
+    generate_start_times(activity(Name, StartRange, EndRange, Duration, Allowed, _, _), StartTimes),
+    member(ActualStart, StartTimes),
+    add_minutes(ActualStart, Duration, ActualEnd).
 
-find_conflict(StartRange, [EndRange|Rest], ConflictStart) :-
-    % Check for conflicts between the current activity and the previous activity
-    EndRange > StartRange,
-    % Calculate a new start time that does not overlap with the previous activity
-    ConflictStart is max(StartRange, EndRange),
-    % Recursively check for conflicts with the remaining activities
-    find_conflict(ConflictStart, Rest, _).
+schedule([], []).
+schedule([Activity|Rest], [ScheduledActivity|ScheduledRest]) :-
+    assign_start_time(Activity, ScheduledActivity),
+    schedule(Rest, ScheduledRest).
 
-find_conflict(_, [_|Rest], ConflictStart) :-
-    % Skip over activities that end before the current activity starts
-    find_conflict(0, Rest, ConflictStart).
+
+
+
+
+
+
+
