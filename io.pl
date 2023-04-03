@@ -2,20 +2,35 @@
 :- consult('helpers.pl').
 
 main(File) :-
-    % Parse the file and get the list of activities
-    parse_file(File, Activities),
-    schedule(Activities, NewAct),
+(   catch(parse_file(File, Activities), error(existence_error(source_sink, _), _), fail)
+->  allowed_activities(Activities, AllowedActivities),
+    schedule(AllowedActivities, NewAct),
     sort_activities_by_end_time(NewAct, Sorted),
-    print_activities(Sorted).
+    print_activities(Sorted)
+;   write('Unable to open file.')
+).
+
+% Create a predicate that creates a list of only activities that are allowed
+allowed_activities(Activities, AllowedActivities) :-
+    allowed_activities(Activities, [], AllowedActivities).
+
+allowed_activities([], Acc, Acc).
+allowed_activities([Activity|Rest], Acc, AllowedActivities) :-
+    Activity = activity(_, _, _, _, true, _, _),
+    append(Acc, [Activity], NewAcc),
+    allowed_activities(Rest, NewAcc, AllowedActivities).
+allowed_activities([_|Rest], Acc, AllowedActivities) :-
+    allowed_activities(Rest, Acc, AllowedActivities).
 
 
-print_activities([]).
 
+print_activities([]). 
 print_activities([activity(Name, _, _, _, _, ActualStart, ActualEnd)|Rest]) :-
-    % Print the allowed, actualstart, and actualend fields
-    format("Name: ~w, ActualStart: ~w, ActualEnd: ~w~n", [Name, ActualStart, ActualEnd]),
+    write('Activity: '), write(Name), nl,
+    write('Start Time: '), convert_to_12_hour_format(ActualStart, Start12Hr), write(Start12Hr), nl,
+    write('End Time: '), convert_to_12_hour_format(ActualEnd, End12Hr), write(End12Hr), nl,
+    nl,
     print_activities(Rest).
-
 
 parse_file(File, Activities) :-
     % Open the file in read mode
@@ -40,9 +55,25 @@ parse_lines(Stream, [Activity|Rest]) :-
     atom_number(StartStr, StartRange),
     atom_number(EndStr, EndRange),
     % Extract the duration value from the duration string
-    split_string(DurStr, " ", "", [DurValue,_]),
+    split_string(DurStr, " ", "", [DurValue, _]),
     atom_number(DurValue, DurNum),
-    % Ignore the duration unit and create an activity term from the components
-    Activity = activity(NameStr, StartRange, EndRange, DurNum, true, 0, 0),
-    % Parse the remaining lines from the file
-    parse_lines(Stream, Rest).
+    % Check for errors
+    (   error_checking(DurNum, StartRange, EndRange)
+    ->  % Create an activity term from the components
+        Activity = activity(NameStr, StartRange, EndRange, DurNum, true, 0, 0),
+        % Parse the remaining lines from the file
+        parse_lines(Stream, Rest)
+    ;   % Error occurred, make activity Allowed = false
+        Activity = activity(NameStr, StartRange, EndRange, DurNum, false, 0, 0),
+        parse_lines(Stream, Rest)
+    ).
+
+
+error_checking(DurNum, StartRange, EndRange) :-
+    DurNum > 0,
+    EndRange > StartRange,
+    subtract_time_minutes(EndRange, StartRange, TimeRange),
+    DurNum =< TimeRange.
+
+
+
