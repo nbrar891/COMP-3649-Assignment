@@ -1,3 +1,4 @@
+--important!! use ghc -o myio -main-is MyIO myio.hs
 module MyIO where
 
 import Data.List.Split (splitOn)
