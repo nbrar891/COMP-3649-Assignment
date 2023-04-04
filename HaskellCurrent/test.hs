@@ -2,7 +2,7 @@ module Main where
 
 import Types (Activity(..))
 import Helpers (sortByActualEndTime)
-import IO (printActivities)
+import MyIO (printActivities)
 
 main :: IO ()
 main = do
