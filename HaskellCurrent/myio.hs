@@ -1,4 +1,4 @@
-module IO where
+module MyIO where
 
 import Data.List.Split (splitOn)
 import System.Environment (getArgs)
