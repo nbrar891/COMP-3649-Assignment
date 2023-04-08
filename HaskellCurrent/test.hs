@@ -3,14 +3,17 @@ module Main where
 import Types (Activity(..))
 import Helpers (sortByActualEndTime)
 import MyIO (printActivities)
+import Scheduling (schedule, splitInHalf)
 
 main :: IO ()
 main = do
-  let a1 = Activity "A" 900 1000 900 True 0 10
-      a2 = Activity "B" 1000 1100 1000 True 0 5
-      a3 = Activity "C" 1100 1200 600 True 0 2
-      a4 = Activity "D" 1000 1100 800 True 0 50
-      a5 = Activity "E" 900 1000 700 True 0 75
+  let a1 = Activity "Gym" 830 1130 120 True 0 0
+      a2 = Activity "Lunch" 1200 1300 30 True 0 0
+      a3 = Activity "Homework" 1200 1630 120 True 0 0
+      a4 = Activity "Breakfast" 830 930 30 True 0 0
+      a5 = Activity "Dinner" 1800 2000 30 True 0 0
       activities = [a1, a2, a3, a4, a5]
-      sortedActivities = sortByActualEndTime activities
+      scheduledActivities = schedule activities
+      finalActivities = splitInHalf scheduledActivities
+      sortedActivities = sortByActualEndTime finalActivities
   printActivities sortedActivities
