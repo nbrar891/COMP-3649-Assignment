@@ -1,6 +1,6 @@
 --sample run
 -- ghc -o inputoutput -main-is InputOutput inputoutput.hs
---./inputoutput normal.txt 
+-- ./inputoutput normal.txt 
 
 module InputOutput where
 
