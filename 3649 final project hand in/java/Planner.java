@@ -17,9 +17,7 @@ public class Planner {
              System.out.print("\n");
 
              int index = 0, extraTime = 0;
-            // print the current file name
-            // System.out.println("Current file being ran: " + filename + "\n");
-
+    
             // create a new array of activities that are allowed to be scheduled
             Activity[] allowedActivities = createAllowedActivitiesOnlyArray(activities, minimumTime, maximumTime);
             // sortSchedule(allowedActivities);
