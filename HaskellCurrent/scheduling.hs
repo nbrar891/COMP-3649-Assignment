@@ -2,11 +2,10 @@ module Scheduling where
 
 import Types (Activity(..))
 import Helpers (addMinutes)
-import Data.List (find, sortBy, sortOn)
+import Data.List (find, sortBy, sortOn, maximumBy)
 import Data.Maybe (fromJust)
 import MyIO (printActivities)
-
--- import Myio (printActivities)
+import Data.Ord (comparing)
 
 
 -- Generates all possible start times for an activity
@@ -17,15 +16,6 @@ generateStartTimes activity =
     generateStartTimesHelper start end duration
       | addMinutes start duration <= end = start : generateStartTimesHelper (addMinutes start 1) end duration
       | otherwise = []
-
--- Chooses a value from the start time options list, based on if there is a conflict with a previous activity
-chooseStartTime :: [Int] -> [Activity] -> [Activity] -> Int -> Maybe Int
-chooseStartTime [] _ _ _ = Nothing
-chooseStartTime (startTime:xs) previousActivities remainingActivities duration =
-  let endTime = addMinutes startTime duration
-      ifConflictFound = conflictsWith startTime endTime (previousActivities ++ remainingActivities)
-  in if ifConflictFound then chooseStartTime xs previousActivities remainingActivities duration else Just startTime
-
 
 
 conflictsWith :: Int -> Int -> [Activity] -> Bool
@@ -42,17 +32,25 @@ conflictFound start1 end1 activity2 =
 
 
 schedule :: [Activity] -> [Activity]
-schedule activities = head $ scheduleActivities activities []
+schedule activities = reverse $ head $ scheduleActivities (sortByStartRange activities) []
+
+sortByStartRange :: [Activity] -> [Activity]
+sortByStartRange = sortBy (\a b -> compare (startRange a) (startRange b))
+
 
 scheduleActivities :: [Activity] -> [Activity] -> [[Activity]]
-scheduleActivities [] scheduledActivities = [scheduledActivities]
+scheduleActivities [] scheduledActivities = [reverse scheduledActivities]
 scheduleActivities (currentActivity:remainingActivities) scheduledActivities =
   [ scheduledActivity : restOfSchedule
   | startTime <- generateStartTimes currentActivity
   , not $ conflictsWith startTime (addMinutes startTime (duration currentActivity)) scheduledActivities
   , let scheduledActivity = currentActivity { actualStart = startTime, actualEnd = addMinutes startTime (duration currentActivity) }
-  , restOfSchedule <- scheduleActivities remainingActivities (scheduledActivities ++ [scheduledActivity])
+  , restOfSchedule <- scheduleActivities remainingActivities (scheduledActivity : scheduledActivities)
   ]
+
+
+splitInHalf :: [a] -> [a]
+splitInHalf xs = take (length xs `div` 2) xs
 
 
 
@@ -63,10 +61,10 @@ main = do
       lunch = Activity "lunch" 1200 1300 30 True 0 0
       homework = Activity "homework" 1200 1930 120 True 0 0
       breakfast = Activity "breakfast" 830 850 20 True 0 0
-      ponderLife = Activity "ponder life" 830 1630 120 True 0 0
-      kickboxing = Activity "kickboxing" 1200 1500 120 True 0 0
 
-      scheduledActivities = schedule [gym, lunch, homework, breakfast, ponderLife, kickboxing]
+
+      scheduledActivities = schedule [gym, lunch, homework, breakfast]
+      finalSchedule = splitInHalf scheduledActivities
       
   putStrLn "Scheduled Activities: "
-  printActivities scheduledActivities
+  printActivities finalSchedule
