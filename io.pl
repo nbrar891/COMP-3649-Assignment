@@ -76,6 +76,3 @@ error_checking(DurNum, StartRange, EndRange, StartLimit, EndLimit) :-
     DurNum =< TimeRange,
     StartRange >= StartLimit,
     EndRange =< EndLimit.
-
-
-
